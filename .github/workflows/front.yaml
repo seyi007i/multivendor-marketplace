@@ -1,54 +1,26 @@
-name: eCommerce site
+name: ecommerce
+on: [push]
 
-on:
-  push:
-    branches: [ "master" ]
-  
 jobs:
-  laravel-tests:
+  build:
     runs-on: ubuntu-latest
     defaults:
       run:
         working-directory: ./frontend
-
-        
-    env:
-      DB_DATABASE: test
-      DB_USERNAME: root01
-      DB_PASSWORD: password@1
-      BROADCAST_DRIVER: log
-    services:
-      mysql:
-        image: mysql:5.7
-        env:
-          MYSQL_ALLOW_EMPTY_PASSWORD: false
-          MYSQL_ROOT_PASSWORD: password@1
-          MYSQL_DATABASE: test
-        ports:
-          - 3306/tcp
-          
     steps:
-    - uses: shivammathur/setup-php@15c43e89cdef867065b0213be354c2841860869e
-      with:
-        php-version: '8.0'
-    - uses: actions/checkout@v4
-    - name: Copy .env
-      run: php -r "file_exists('.env') || copy('.env.example', '.env');"
-    - name: Cache Composer dependencies
-      uses: actions/cache@v3
-      with:
-        path: /tmp/composer-cache
-        key: ${{ runner.os }}-${{ hashFiles('**/composer.lock') }}
-      
-   # - name: Install Dependencies
-   #   run: composer install -q --no-ansi --no-interaction --no-scripts --no-progress --prefer-dist  
-    - name: Generate key
-      run: php artisan key:generate
-    - name: Directory Permissions
-      run: chmod -R 777 storage bootstrap/cache
-    - name: Create Database
-      run: |
-        mkdir -p database
-        touch database/database.sqlite
-    - name: Execute tests (Unit and Feature tests) via PHPUnit/Pest
-      run: php artisan test
+     #- uses: actions/checkout@v2
+     - uses: actions/checkout@v4
+     - uses: actions/setup-node@v4
+       with:
+        node-version: 16
+
+     - name: Install dependencies
+       run: npm install
+     - name: build 
+       run: npm run build --if-present
+     - name: test app
+       run: npm test
+
+
+
+    
